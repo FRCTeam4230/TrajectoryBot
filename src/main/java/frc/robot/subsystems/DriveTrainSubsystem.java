@@ -85,8 +85,8 @@ public class DriveTrainSubsystem extends SubsystemBase {
       //Divide by 60 to get meters per second for velocity
       // leftMaster.getEncoder().getVelocity() / Constants.DriveTrainSubsystemConstants.GEAR_RATIO * 2 * Math.PI * Units.inchesToMeters(Constants.DriveTrainSubsystemConstants.WHEEL_RADIUS) / 60,
       // rightMaster.getEncoder().getVelocity() / Constants.DriveTrainSubsystemConstants.GEAR_RATIO * 2 * Math.PI * Units.inchesToMeters(Constants.DriveTrainSubsystemConstants.WHEEL_RADIUS) / 60
-      leftMaster.getEncoder().getVelocity() * Units.inchesToMeters(Constants.DriveTrainSubsystemConstants.MOTOR_ROTATION_TO_INCHES) / 60,
-      rightMaster.getEncoder().getVelocity() * Units.inchesToMeters(Constants.DriveTrainSubsystemConstants.MOTOR_ROTATION_TO_INCHES) / 60
+      leftMaster.getEncoder().getVelocity() * Units.inchesToMeters(DriveTrainSubsystemConstants.MOTOR_ROTATION_TO_INCHES) / 60,
+      rightMaster.getEncoder().getVelocity() * Units.inchesToMeters(DriveTrainSubsystemConstants.MOTOR_ROTATION_TO_INCHES) / 60
     );
   }
 
@@ -132,5 +132,6 @@ public class DriveTrainSubsystem extends SubsystemBase {
     motor.restoreFactoryDefaults();
     motor.setOpenLoopRampRate(Constants.DriveTrainSubsystemConstants.RAMP_RATE);
     motor.setIdleMode(IdleMode.kCoast);
+    motor.getEncoder().setPositionConversionFactor(DriveTrainSubsystemConstants.MOTOR_ROTATION_TO_INCHES);
   }
 }

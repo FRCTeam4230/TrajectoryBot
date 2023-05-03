@@ -21,9 +21,9 @@ public final class Constants {
     //Use "frc-characterization" tool to figure this out
     //That tool can also estimate the p term for a pid controller
     public static final double kS = 0.05;
-    public static final double kV = 0.05;
-    public static final double kA = 0.05;
-    public static final double kP = 0.05;
+    public static final double kV = 0.01;
+    public static final double kA = 0.01;
+    public static final double kP = 0.1;
     public static final double RAMP_RATE = 0.1;
     public static final double MOTOR_ROTATION_TO_INCHES = 72 / 40.687;
 
