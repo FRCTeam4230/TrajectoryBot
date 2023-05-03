@@ -27,6 +27,8 @@ import edu.wpi.first.wpilibj2.command.RamseteCommand;
 
 public class RobotContainer {
   private DriveTrainSubsystem driveTrain = new DriveTrainSubsystem();
+  private TrajectoryConfig config;
+  private Trajectory trajectory;
 
   public RobotContainer() {
     //Should show the robot moving on smart dashboard
@@ -35,55 +37,43 @@ public class RobotContainer {
     
     
     configureBindings();
+
+    //PathWeaver should be able to do all the trajectory generation for us, replacing this code
+    //Takes in max velocity m/s and max acceleration m/s^2
+    config = new TrajectoryConfig(Units.inchesToMeters(Constants.TrajectoryConstants.MAX_VELOCITY), 
+    Units.inchesToMeters(Constants.TrajectoryConstants.MAX_ACCELERATION));
+    config.setKinematics(driveTrain.getKinematics());
+
+    //Takes in a list of waypoints and the config variable
+    trajectory = TrajectoryGenerator.generateTrajectory(
+      Arrays.asList(new Pose2d(), new Pose2d(1.0, 0, new Rotation2d())),
+      config
+    );
   }
 
   private void configureBindings() {}
 
   
   public Command getAutonomousCommand() {
-    //PathWeaver should be able to do all the trajectory generation for us, replacing this code
-    //Takes in max velocity m/s and max acceleration m/s^2
-    TrajectoryConfig config = new TrajectoryConfig(Units.inchesToMeters(Constants.TrajectoryConstants.MAX_VELOCITY), 
-    Units.inchesToMeters(Constants.TrajectoryConstants.MAX_ACCELERATION));
-    config.setKinematics(driveTrain.getKinematics());
-
-    //Takes in a list of waypoints and the config variable
-    Trajectory trajectory = TrajectoryGenerator.generateTrajectory(
-      Arrays.asList(new Pose2d(), new Pose2d(1.0, 0, new Rotation2d())),
-      config
-    );
-
-    //Trajectory from path weaver
-    //Start behind charge station, drive around charge station to to the left most element
-    // String trajectoryJSON = "path/behindStationtoElement.path.wpilib.json";
-    // Trajectory trajectoryFromPathWeaver = new Trajectory();
-
-    
-  //   try {
-  //     Path trajectoryPath = Filesystem.getDeployDirectory().toPath().resolve(trajectoryJSON);
-  //     trajectoryFromPathWeaver = TrajectoryUtil.fromPathweaverJson(trajectoryPath);
-  //  } catch (IOException ex) {
-  //     DriverStation.reportError("Unable to open trajectory: " + trajectoryJSON, ex.getStackTrace());
-  //  }
 
 
-    // RamseteCommand command = new RamseteCommand(
-    //   trajectoryFromPathWeaver,
-    //   // trajectory,
-    //   driveTrain::getPose,
-    //   //It is suggested to use these constants, idk what they do
-    //   //If needed, we can read the documentation on what they do and adjust them
-    //   new RamseteController(2.0, 0.7), 
-    //   driveTrain.getFeedforward(), 
-    //   driveTrain.getKinematics(), 
-    //   driveTrain::getSpeeds, 
-    //   driveTrain.getLeftPIDController(), 
-    //   driveTrain.getRightPIDController(), 
-    //   driveTrain::setOutput, 
-    //   //Requires the drive train
-    //   driveTrain);
+    RamseteCommand command = new RamseteCommand(
+      trajectory,
+      // trajectoryFromPathWeaver,
+      // trajectory,
+      driveTrain::getPose,
+      //It is suggested to use these constants, idk what they do
+      //If needed, we can read the documentation on what they do and adjust them
+      new RamseteController(2.0, 0.7), 
+      driveTrain.getFeedforward(), 
+      driveTrain.getKinematics(), 
+      driveTrain::getSpeeds, 
+      driveTrain.getLeftPIDController(),
+      driveTrain.getRightPIDController(), 
+      driveTrain::setOutput, 
+      //Requires the drive train
+      driveTrain);
 
-      // return command;
-      return null;
+      return command;
   }
 }

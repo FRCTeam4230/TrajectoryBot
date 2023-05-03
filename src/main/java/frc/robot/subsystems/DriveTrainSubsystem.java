@@ -29,7 +29,6 @@ public class DriveTrainSubsystem extends SubsystemBase {
   private CANSparkMax leftSlave = new CANSparkMax(DriveTrainSubsystemConstants.LEFT_SLAVE_PORT, MotorType.kBrushless);
   private CANSparkMax rightSlave = new CANSparkMax(DriveTrainSubsystemConstants.RIGHT_SLAVE_PORT, MotorType.kBrushless);
 
-
   private AHRS gyro = new AHRS(SPI.Port.kMXP);
 
   //Takes in the robot's width, more specifically the distance between the wheels
