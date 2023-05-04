@@ -70,7 +70,7 @@ public class DriveTrainSubsystem extends SubsystemBase {
   }
 
   public double getLeftEncoder() {
-    return leftMaster.getEncoder().getPosition();
+    return -leftMaster.getEncoder().getPosition();
   }
 
   public double getRightEncoder() {
@@ -85,7 +85,7 @@ public class DriveTrainSubsystem extends SubsystemBase {
       //Divide by 60 to get meters per second for velocity
       // leftMaster.getEncoder().getVelocity() / Constants.DriveTrainSubsystemConstants.GEAR_RATIO * 2 * Math.PI * Units.inchesToMeters(Constants.DriveTrainSubsystemConstants.WHEEL_RADIUS) / 60,
       // rightMaster.getEncoder().getVelocity() / Constants.DriveTrainSubsystemConstants.GEAR_RATIO * 2 * Math.PI * Units.inchesToMeters(Constants.DriveTrainSubsystemConstants.WHEEL_RADIUS) / 60
-      leftMaster.getEncoder().getVelocity() * Units.inchesToMeters(DriveTrainSubsystemConstants.MOTOR_ROTATION_TO_INCHES) / 60,
+      -leftMaster.getEncoder().getVelocity() * Units.inchesToMeters(DriveTrainSubsystemConstants.MOTOR_ROTATION_TO_INCHES) / 60,
       rightMaster.getEncoder().getVelocity() * Units.inchesToMeters(DriveTrainSubsystemConstants.MOTOR_ROTATION_TO_INCHES) / 60
     );
   }
