@@ -18,6 +18,7 @@ import edu.wpi.first.math.kinematics.DifferentialDriveOdometry;
 import edu.wpi.first.math.kinematics.DifferentialDriveWheelSpeeds;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.SPI;
+import edu.wpi.first.wpilibj.drive.DifferentialDrive;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 import frc.robot.Constants.DriveTrainSubsystemConstants;
@@ -28,6 +29,8 @@ public class DriveTrainSubsystem extends SubsystemBase {
 
   private CANSparkMax leftSlave = new CANSparkMax(DriveTrainSubsystemConstants.LEFT_SLAVE_PORT, MotorType.kBrushless);
   private CANSparkMax rightSlave = new CANSparkMax(DriveTrainSubsystemConstants.RIGHT_SLAVE_PORT, MotorType.kBrushless);
+
+  private DifferentialDrive differentialDrive = new DifferentialDrive(leftMaster, rightMaster);
 
   private AHRS gyro = new AHRS(SPI.Port.kMXP);
 
@@ -62,6 +65,10 @@ public class DriveTrainSubsystem extends SubsystemBase {
 
     leftMaster.setInverted(false);
     rightMaster.setInverted(true);
+  }
+
+  public void arcadeDrive(double forward, double rotation) {
+    differentialDrive.arcadeDrive(forward, rotation);
   }
 
   public Rotation2d getHeading() {
