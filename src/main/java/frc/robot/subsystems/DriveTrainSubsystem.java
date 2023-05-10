@@ -9,6 +9,7 @@ import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMax.IdleMode;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
+import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.geometry.Pose2d;
@@ -47,7 +48,7 @@ public class DriveTrainSubsystem extends SubsystemBase {
 
   //Feedforward uses constants to calculate how to power to give to the motors to move them a certain distance
   //Predicts how far robot will move, as opposed to pid, which reacts after the robot has moved
-  private SimpleMotorFeedforward feedForward = new SimpleMotorFeedforward(Constants.DriveTrainSubsystemConstants.kS, Constants.DriveTrainSubsystemConstants.kV, Constants.DriveTrainSubsystemConstants.kV);
+  private SimpleMotorFeedforward feedForward = new SimpleMotorFeedforward(Constants.DriveTrainSubsystemConstants.kS, Constants.DriveTrainSubsystemConstants.kV);
 
   //P is the only term needed because the setpoint is a velocity
   //Feedforward as the base speed, the pid controller to fine tune
@@ -84,6 +85,14 @@ public class DriveTrainSubsystem extends SubsystemBase {
 
   public double getRightEncoder() {
     return rightMaster.getEncoder().getPosition();
+  }
+
+  public double getLeftEncoderMeters() {
+    return Units.inchesToMeters(getLeftEncoder());
+  }
+
+  public double getRightEncoderMeters() {
+    return Units.inchesToMeters(getRightEncoder());
   }
 
   public DifferentialDriveWheelSpeeds getSpeeds() {
@@ -124,8 +133,8 @@ public class DriveTrainSubsystem extends SubsystemBase {
     //Volts to from -12 to 12
     //set takes in -1 to 1
     //Divide by 12 converts the number from -12 to 12 range to -1 to 1 range
-    leftMaster.set(leftVolts / 12);
-    rightMaster.set(rightVolts / 12);
+    leftMaster.set(MathUtil.clamp(leftVolts / 12, -0.5, 0.5));
+    rightMaster.set(MathUtil.clamp(rightVolts / 12, -0.5, 0.5));
   }
 
   @Override
