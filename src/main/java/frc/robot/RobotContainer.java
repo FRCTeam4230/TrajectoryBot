@@ -37,7 +37,7 @@ public class RobotContainer {
   private void configureBindings() {}
 
   private void configureDefaultCommands() {
-    driveTrain.setDefaultCommand(new DriveCommand(driveTrain, () -> controller.getLeftX(), () -> controller.getLeftY()));
+    driveTrain.setDefaultCommand(new DriveCommand(driveTrain, () -> controller.getLeftY(), () -> controller.getLeftX()));
   }
 
   

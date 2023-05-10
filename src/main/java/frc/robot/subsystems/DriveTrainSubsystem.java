@@ -18,20 +18,26 @@ import edu.wpi.first.math.kinematics.DifferentialDriveKinematics;
 import edu.wpi.first.math.kinematics.DifferentialDriveOdometry;
 import edu.wpi.first.math.kinematics.DifferentialDriveWheelSpeeds;
 import edu.wpi.first.math.util.Units;
+import edu.wpi.first.util.sendable.SendableBuilder;
 import edu.wpi.first.wpilibj.SPI;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
+import edu.wpi.first.wpilibj.motorcontrol.MotorControllerGroup;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 import frc.robot.Constants.DriveTrainSubsystemConstants;
 
 public class DriveTrainSubsystem extends SubsystemBase {
-  private CANSparkMax leftMaster = new CANSparkMax(DriveTrainSubsystemConstants.LEFT_MASTER_PORT, MotorType.kBrushless);
-  private CANSparkMax rightMaster = new CANSparkMax(DriveTrainSubsystemConstants.RIGHT_MASTER_PORT, MotorType.kBrushless);
+  private CANSparkMax left1 = new CANSparkMax(DriveTrainSubsystemConstants.LEFT_MASTER_PORT, MotorType.kBrushless);
+  private CANSparkMax right1 = new CANSparkMax(DriveTrainSubsystemConstants.RIGHT_MASTER_PORT, MotorType.kBrushless);
 
-  private CANSparkMax leftSlave = new CANSparkMax(DriveTrainSubsystemConstants.LEFT_SLAVE_PORT, MotorType.kBrushless);
-  private CANSparkMax rightSlave = new CANSparkMax(DriveTrainSubsystemConstants.RIGHT_SLAVE_PORT, MotorType.kBrushless);
+  private CANSparkMax left2 = new CANSparkMax(DriveTrainSubsystemConstants.LEFT_SLAVE_PORT, MotorType.kBrushless);
+  private CANSparkMax right2 = new CANSparkMax(DriveTrainSubsystemConstants.RIGHT_SLAVE_PORT, MotorType.kBrushless);
 
-  private DifferentialDrive differentialDrive = new DifferentialDrive(leftMaster, rightMaster);
+  private MotorControllerGroup leftGroup = new MotorControllerGroup(left1, left2);
+  private MotorControllerGroup rightGroup = new MotorControllerGroup(right1, right2);
+
+  private DifferentialDrive differentialDrive;
 
   private AHRS gyro = new AHRS(SPI.Port.kMXP);
 
@@ -56,16 +62,17 @@ public class DriveTrainSubsystem extends SubsystemBase {
   private PIDController rightPIDController = new PIDController(Constants.DriveTrainSubsystemConstants.kP, 0, 0);
 
   public DriveTrainSubsystem() {
-    configMotors(leftMaster);
-    configMotors(rightMaster);
-    configMotors(leftSlave);
-    configMotors(rightSlave);
+    configMotors(left1);
+    configMotors(right1);
+    configMotors(left2);
+    configMotors(right2);
 
-    leftSlave.follow(leftMaster);
-    rightSlave.follow(rightMaster);
+    leftGroup.setInverted(false);
+    rightGroup.setInverted(true);
 
-    leftMaster.setInverted(false);
-    rightMaster.setInverted(true);
+    differentialDrive= new DifferentialDrive(leftGroup, rightGroup);
+
+    SmartDashboard.putData(this);
   }
 
   public void arcadeDrive(double forward, double rotation) {
@@ -80,11 +87,11 @@ public class DriveTrainSubsystem extends SubsystemBase {
   }
 
   public double getLeftEncoder() {
-    return -leftMaster.getEncoder().getPosition();
+    return -(left1.getEncoder().getPosition() + left2.getEncoder().getPosition()) / 2.0;
   }
 
   public double getRightEncoder() {
-    return rightMaster.getEncoder().getPosition();
+    return (right1.getEncoder().getPosition() + right2.getEncoder().getPosition()) / 2.0;
   }
 
   public double getLeftEncoderMeters() {
@@ -101,10 +108,10 @@ public class DriveTrainSubsystem extends SubsystemBase {
       //Gear ratio converts that into rpm of the wheel
       //2pi * radius converts rpm of the wheel to meters per minute  for velocity
       //Divide by 60 to get meters per second for velocity
-      // leftMaster.getEncoder().getVelocity() / Constants.DriveTrainSubsystemConstants.GEAR_RATIO * 2 * Math.PI * Units.inchesToMeters(Constants.DriveTrainSubsystemConstants.WHEEL_RADIUS) / 60,
-      // rightMaster.getEncoder().getVelocity() / Constants.DriveTrainSubsystemConstants.GEAR_RATIO * 2 * Math.PI * Units.inchesToMeters(Constants.DriveTrainSubsystemConstants.WHEEL_RADIUS) / 60
-      -leftMaster.getEncoder().getVelocity() * Units.inchesToMeters(DriveTrainSubsystemConstants.MOTOR_ROTATION_TO_INCHES) / 60,
-      rightMaster.getEncoder().getVelocity() * Units.inchesToMeters(DriveTrainSubsystemConstants.MOTOR_ROTATION_TO_INCHES) / 60
+      // left1.getEncoder().getVelocity() / Constants.DriveTrainSubsystemConstants.GEAR_RATIO * 2 * Math.PI * Units.inchesToMeters(Constants.DriveTrainSubsystemConstants.WHEEL_RADIUS) / 60,
+      // right1.getEncoder().getVelocity() / Constants.DriveTrainSubsystemConstants.GEAR_RATIO * 2 * Math.PI * Units.inchesToMeters(Constants.DriveTrainSubsystemConstants.WHEEL_RADIUS) / 60
+      -left1.getEncoder().getVelocity() * Units.inchesToMeters(DriveTrainSubsystemConstants.MOTOR_ROTATION_TO_INCHES) / 60,
+      right1.getEncoder().getVelocity() * Units.inchesToMeters(DriveTrainSubsystemConstants.MOTOR_ROTATION_TO_INCHES) / 60
     );
   }
 
@@ -133,8 +140,8 @@ public class DriveTrainSubsystem extends SubsystemBase {
     //Volts to from -12 to 12
     //set takes in -1 to 1
     //Divide by 12 converts the number from -12 to 12 range to -1 to 1 range
-    leftMaster.set(MathUtil.clamp(leftVolts / 12, -0.5, 0.5));
-    rightMaster.set(MathUtil.clamp(rightVolts / 12, -0.5, 0.5));
+    leftGroup.set(MathUtil.clamp(leftVolts / 12, -0.5, 0.5));
+    rightGroup.set(MathUtil.clamp(rightVolts / 12, -0.5, 0.5));
   }
 
   @Override
@@ -151,5 +158,14 @@ public class DriveTrainSubsystem extends SubsystemBase {
     motor.setOpenLoopRampRate(Constants.DriveTrainSubsystemConstants.RAMP_RATE);
     motor.setIdleMode(IdleMode.kCoast);
     motor.getEncoder().setPositionConversionFactor(DriveTrainSubsystemConstants.MOTOR_ROTATION_TO_INCHES);
+    motor.getEncoder().setPosition(0);
+  }
+
+  @Override
+  public void initSendable(SendableBuilder builder) {
+    super.initSendable(builder);
+
+    builder.addDoubleProperty("left encoder", () -> getLeftEncoder(), null);
+    builder.addDoubleProperty("right encoder", () -> getRightEncoder(), null);
   }
 }
