@@ -68,7 +68,9 @@ public class DriveTrainSubsystem extends SubsystemBase {
   }
 
   public void arcadeDrive(double forward, double rotation) {
-    differentialDrive.arcadeDrive(forward, rotation);
+    differentialDrive.arcadeDrive(
+      forward * DriveTrainSubsystemConstants.SPEED_MULTIPLIER
+    , rotation * DriveTrainSubsystemConstants.ROTATION_MULTIPLIER);
   }
 
   public Rotation2d getHeading() {

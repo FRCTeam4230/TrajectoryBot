@@ -4,6 +4,8 @@
 
 package frc.robot;
 
+import frc.robot.Constants.OperatorConstants;
+import frc.robot.commands.DriveCommand;
 import frc.robot.subsystems.DriveTrainSubsystem;
 
 
@@ -12,12 +14,14 @@ import com.pathplanner.lib.PathPlanner;
 import com.pathplanner.lib.commands.PPRamseteCommand;
 
 import edu.wpi.first.math.controller.RamseteController;
+import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 
 public class RobotContainer {
   private DriveTrainSubsystem driveTrain = new DriveTrainSubsystem();
+  private XboxController controller = new XboxController(OperatorConstants.kDriverControllerPort);
   
 
   public RobotContainer() {
@@ -27,9 +31,14 @@ public class RobotContainer {
     
     
     configureBindings();
+    configureDefaultCommands();
   }
 
   private void configureBindings() {}
+
+  private void configureDefaultCommands() {
+    driveTrain.setDefaultCommand(new DriveCommand(driveTrain, () -> controller.getLeftX(), () -> controller.getLeftY()));
+  }
 
   
   public Command getAutonomousCommand() {
