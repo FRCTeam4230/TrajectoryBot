@@ -67,18 +67,20 @@ public class DriveTrainSubsystem extends SubsystemBase {
     configMotors(left2);
     configMotors(right2);
 
-    leftGroup.setInverted(false);
+    
     rightGroup.setInverted(true);
 
     differentialDrive= new DifferentialDrive(leftGroup, rightGroup);
+
+    odometry.resetPosition(getHeading(), getLeftEncoderMeters(), getLeftEncoder(), new Pose2d());
 
     SmartDashboard.putData(this);
   }
 
   public void arcadeDrive(double forward, double rotation) {
     differentialDrive.arcadeDrive(
-      forward * DriveTrainSubsystemConstants.SPEED_MULTIPLIER
-    , rotation * DriveTrainSubsystemConstants.ROTATION_MULTIPLIER);
+      MathUtil.clamp(forward * DriveTrainSubsystemConstants.SPEED_MULTIPLIER, -0.99, 0.99)
+    , MathUtil.clamp(rotation * DriveTrainSubsystemConstants.ROTATION_MULTIPLIER, -0.99, 0.99));
   }
 
   public Rotation2d getHeading() {
@@ -115,6 +117,20 @@ public class DriveTrainSubsystem extends SubsystemBase {
     );
   }
 
+  public double getLeftSpeed() {
+    double left1Speed = (left1.getEncoder().getVelocity() * Units.inchesToMeters(DriveTrainSubsystemConstants.MOTOR_ROTATION_TO_INCHES) / 60);
+    double left2Speed = (left2.getEncoder().getVelocity() * Units.inchesToMeters(DriveTrainSubsystemConstants.MOTOR_ROTATION_TO_INCHES) / 60);
+
+    return -(left1Speed + left2Speed) / 2.0;
+  }
+
+  public double getRightSpeed() {
+    double right1Speed = (right1.getEncoder().getVelocity() * Units.inchesToMeters(DriveTrainSubsystemConstants.MOTOR_ROTATION_TO_INCHES) / 60);
+    double right2Speed = (right2.getEncoder().getVelocity() * Units.inchesToMeters(DriveTrainSubsystemConstants.MOTOR_ROTATION_TO_INCHES) / 60);
+
+    return (right1Speed + right2Speed) / 2.0;
+  }
+
 
   public SimpleMotorFeedforward getFeedforward() {
     return feedForward;
@@ -148,9 +164,7 @@ public class DriveTrainSubsystem extends SubsystemBase {
   public void periodic() {
     //Updates robot position, in the video it took getHeading() and getSpeeds()
     //Here it takes in the distance travelled instead of velocity, which is kinda weirds
-     pose = odometry.update(getHeading(),
-     Units.inchesToMeters(getRightEncoder()),
-     Units.inchesToMeters(getLeftEncoder()));
+     pose = odometry.update(getHeading(), getRightEncoderMeters(), getLeftEncoderMeters());
   }
 
   private void configMotors(CANSparkMax motor) {
@@ -167,5 +181,7 @@ public class DriveTrainSubsystem extends SubsystemBase {
 
     builder.addDoubleProperty("left encoder", () -> getLeftEncoder(), null);
     builder.addDoubleProperty("right encoder", () -> getRightEncoder(), null);
+    builder.addDoubleProperty("left speed", () -> getLeftSpeed(), null);
+    builder.addDoubleProperty("right speed", () -> getRightSpeed(), null);
   }
 }
