@@ -37,14 +37,14 @@ public class RobotContainer {
   private void configureBindings() {}
 
   private void configureDefaultCommands() {
-    driveTrain.setDefaultCommand(new DriveCommand(driveTrain, () -> controller.getLeftY(), () -> controller.getLeftX()));
+    driveTrain.setDefaultCommand(new DriveCommand(driveTrain, () -> controller.getRightX(), () -> controller.getLeftY()));
   }
 
   
   public Command getAutonomousCommand() {
 
     PPRamseteCommand command = new PPRamseteCommand(
-      PathPlanner.loadPath("testPath", new PathConstraints(1, 0.5)), 
+      PathPlanner.loadPath("path2", new PathConstraints(0.1, 0.5)),
       driveTrain::getPose, 
       new RamseteController(),
       driveTrain.getFeedforward(), 

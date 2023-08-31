@@ -89,11 +89,11 @@ public class DriveTrainSubsystem extends SubsystemBase {
   }
 
   public double getLeftEncoder() {
-    return -(left1.getEncoder().getPosition() + left2.getEncoder().getPosition()) / 2.0;
+    return (left1.getEncoder().getPosition() + left2.getEncoder().getPosition()) / 2.0;
   }
 
   public double getRightEncoder() {
-    return (right1.getEncoder().getPosition() + right2.getEncoder().getPosition()) / 2.0;
+    return -(right1.getEncoder().getPosition() + right2.getEncoder().getPosition()) / 2.0;
   }
 
   public double getLeftEncoderMeters() {
@@ -156,8 +156,8 @@ public class DriveTrainSubsystem extends SubsystemBase {
     //Volts to from -12 to 12
     //set takes in -1 to 1
     //Divide by 12 converts the number from -12 to 12 range to -1 to 1 range
-    leftGroup.set(MathUtil.clamp(leftVolts / 12, -0.5, 0.5));
-    rightGroup.set(MathUtil.clamp(rightVolts / 12, -0.5, 0.5));
+    leftGroup.set(MathUtil.clamp(leftVolts / 12, -0.3, 0.3));
+    rightGroup.set(MathUtil.clamp(rightVolts / 12, -0.3, 0.3));
   }
 
   @Override
