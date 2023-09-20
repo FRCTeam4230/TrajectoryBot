@@ -72,7 +72,7 @@ public class DriveTrainSubsystem extends SubsystemBase {
 
     differentialDrive= new DifferentialDrive(leftGroup, rightGroup);
 
-    odometry.resetPosition(getHeading(), getLeftEncoderMeters(), getLeftEncoder(), new Pose2d());
+    resetOdometry();
 
     SmartDashboard.putData(this);
   }
@@ -88,8 +88,18 @@ public class DriveTrainSubsystem extends SubsystemBase {
     return Rotation2d.fromDegrees(-gyro.getAngle());
   }
 
+  public void resetOdometry(Pose2d pos) {
+    odometry.resetPosition(getHeading(), getLeftEncoderMeters(), getRightEncoderMeters(), pos);
+  }
+
+
+  public void resetOdometry() {
+    resetOdometry(new Pose2d());
+  }
+
+
   public double getLeftEncoder() {
-    return (left1.getEncoder().getPosition() + left2.getEncoder().getPosition()) / 2.0;
+    return (left2.getEncoder().getPosition());
   }
 
   public double getRightEncoder() {
@@ -179,9 +189,17 @@ public class DriveTrainSubsystem extends SubsystemBase {
   public void initSendable(SendableBuilder builder) {
     super.initSendable(builder);
 
-    builder.addDoubleProperty("left encoder", () -> getLeftEncoder(), null);
-    builder.addDoubleProperty("right encoder", () -> getRightEncoder(), null);
+    builder.addDoubleProperty("left encoder", () -> getLeftEncoderMeters(), null);
+    builder.addDoubleProperty("left encoder1", () -> Units.inchesToMeters(left1.getEncoder().getPosition()), null);
+    builder.addDoubleProperty("left encoder2", () -> Units.inchesToMeters(left2.getEncoder().getPosition()), null);
+    builder.addDoubleProperty("right encoder", () -> getRightEncoderMeters(), null);
     builder.addDoubleProperty("left speed", () -> getLeftSpeed(), null);
     builder.addDoubleProperty("right speed", () -> getRightSpeed(), null);
+
+    builder.addDoubleProperty("odometry rot", () -> odometry.getPoseMeters().getRotation().getDegrees(), null);
+    builder.addDoubleProperty("odometry x", () -> odometry.getPoseMeters().getX(), null);
+    builder.addDoubleProperty("odometry y", () -> odometry.getPoseMeters().getY(), null);
+
+
   }
 }

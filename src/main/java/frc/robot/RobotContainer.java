@@ -4,6 +4,8 @@
 
 package frc.robot;
 
+import edu.wpi.first.math.controller.PIDController;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
 import frc.robot.Constants.OperatorConstants;
 import frc.robot.commands.DriveCommand;
 import frc.robot.subsystems.DriveTrainSubsystem;
@@ -43,9 +45,12 @@ public class RobotContainer {
   
   public Command getAutonomousCommand() {
 
-    PPRamseteCommand command = new PPRamseteCommand(
-      PathPlanner.loadPath("path2", new PathConstraints(0.1, 0.5)),
-      driveTrain::getPose, 
+    var traj =
+            PathPlanner.loadPath("path2", new PathConstraints(0.1, 0.5));
+
+    Command command = new PPRamseteCommand(
+      traj,
+      driveTrain::getPose,
       new RamseteController(),
       driveTrain.getFeedforward(), 
       driveTrain.getKinematics(), 
@@ -53,8 +58,9 @@ public class RobotContainer {
       driveTrain.getLeftPIDController(),
       driveTrain.getRightPIDController(),
       driveTrain::setOutput,
-      driveTrain);
-    
+      driveTrain)
+            .beforeStarting(new InstantCommand(() -> driveTrain.resetOdometry(traj.getInitialPose())));
+
       return command;
   }
 }
