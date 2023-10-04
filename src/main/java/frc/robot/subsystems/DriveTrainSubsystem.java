@@ -54,12 +54,15 @@ public class DriveTrainSubsystem extends SubsystemBase {
 
   //Feedforward uses constants to calculate how to power to give to the motors to move them a certain distance
   //Predicts how far robot will move, as opposed to pid, which reacts after the robot has moved
-  private SimpleMotorFeedforward feedForward = new SimpleMotorFeedforward(Constants.DriveTrainSubsystemConstants.kS, Constants.DriveTrainSubsystemConstants.kV);
+  private SimpleMotorFeedforward feedForward = new SimpleMotorFeedforward(Constants.DriveTrainSubsystemConstants.kS, Constants.DriveTrainSubsystemConstants.kV,
+          DriveTrainSubsystemConstants.kA);
 
   //P is the only term needed because the setpoint is a velocity
   //Feedforward as the base speed, the pid controller to fine tune
-  private PIDController leftPIDController = new PIDController(Constants.DriveTrainSubsystemConstants.kP, 0, 0);
-  private PIDController rightPIDController = new PIDController(Constants.DriveTrainSubsystemConstants.kP, 0, 0);
+  private PIDController leftPIDController = new PIDController(Constants.DriveTrainSubsystemConstants.kP, 0,
+          DriveTrainSubsystemConstants.kD);
+  private PIDController rightPIDController = new PIDController(Constants.DriveTrainSubsystemConstants.kP, 0,
+          DriveTrainSubsystemConstants.kD);
 
   public DriveTrainSubsystem() {
     configMotors(left1);
@@ -67,8 +70,9 @@ public class DriveTrainSubsystem extends SubsystemBase {
     configMotors(left2);
     configMotors(right2);
 
-    
-    rightGroup.setInverted(true);
+
+    leftGroup.setInverted(true);
+    rightGroup.setInverted(false);
 
     differentialDrive= new DifferentialDrive(leftGroup, rightGroup);
 
