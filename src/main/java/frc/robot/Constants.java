@@ -30,7 +30,8 @@ public final class Constants {
     public static final double kA = 0.032907;//Bubblegum
 
       //    public static final double kP = 2;//2022's bot
-    public static final double kP = 2.4077;//Bubblegum
+    // public static final double kP = 2.4077;//Bubblegum
+    public static final double kP = 5;//Bubblegum
 
 //      public static final double kD = 0.39408;//2022's bot
       public static final double kD = 0.21483;//Bubblegum

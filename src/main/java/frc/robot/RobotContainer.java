@@ -4,22 +4,17 @@
 
 package frc.robot;
 
-import edu.wpi.first.math.controller.PIDController;
-import edu.wpi.first.wpilibj2.command.InstantCommand;
-import frc.robot.Constants.OperatorConstants;
-import frc.robot.commands.DriveCommand;
-import frc.robot.subsystems.DriveTrainSubsystem;
-
-
 import com.pathplanner.lib.PathConstraints;
 import com.pathplanner.lib.PathPlanner;
 import com.pathplanner.lib.commands.PPRamseteCommand;
 
 import edu.wpi.first.math.controller.RamseteController;
 import edu.wpi.first.wpilibj.XboxController;
-import edu.wpi.first.wpilibj.smartdashboard.Field2d;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
+import frc.robot.Constants.OperatorConstants;
+import frc.robot.commands.DriveCommand;
+import frc.robot.subsystems.DriveTrainSubsystem;
 
 public class RobotContainer {
   private DriveTrainSubsystem driveTrain = new DriveTrainSubsystem();
@@ -28,10 +23,7 @@ public class RobotContainer {
 
   public RobotContainer() {
     //Should show the robot moving on smart dashboard
-    Field2d field = new Field2d();
-    SmartDashboard.putData(field);
-    
-    
+
     configureBindings();
     configureDefaultCommands();
   }
@@ -46,7 +38,7 @@ public class RobotContainer {
   public Command getAutonomousCommand() {
 
     var traj =
-            PathPlanner.loadPath("path2", new PathConstraints(0.1, 0.5));
+            PathPlanner.loadPath("path2long", new PathConstraints(0.7, 1));
 
     Command command = new PPRamseteCommand(
       traj,
@@ -58,8 +50,10 @@ public class RobotContainer {
       driveTrain.getLeftPIDController(),
       driveTrain.getRightPIDController(),
       driveTrain::setOutput,
-      driveTrain)
-            .beforeStarting(new InstantCommand(() -> driveTrain.resetOdometry(traj.getInitialPose())));
+      driveTrain){
+        @Override
+        public boolean isFinished() {return false;}
+      }.beforeStarting(new InstantCommand(() -> driveTrain.resetOdometry(traj.getInitialPose())));
 
       return command;
   }
