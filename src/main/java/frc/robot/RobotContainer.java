@@ -4,7 +4,6 @@
 
 package frc.robot;
 
-import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import frc.robot.Constants.OperatorConstants;
 import frc.robot.commands.DriveCommand;
@@ -17,8 +16,6 @@ import com.pathplanner.lib.commands.PPRamseteCommand;
 
 import edu.wpi.first.math.controller.RamseteController;
 import edu.wpi.first.wpilibj.XboxController;
-import edu.wpi.first.wpilibj.smartdashboard.Field2d;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 
 public class RobotContainer {
@@ -41,7 +38,7 @@ public class RobotContainer {
   public Command getAutonomousCommand() {
 
     var traj =
-            PathPlanner.loadPath("path2", new PathConstraints(0.5, 0.5));
+            PathPlanner.loadPath("testPath", new PathConstraints(0.5, 0.5));
 
     Command command = new PPRamseteCommand(
       traj,

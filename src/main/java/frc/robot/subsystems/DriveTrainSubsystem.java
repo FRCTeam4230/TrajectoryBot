@@ -92,7 +92,7 @@ public class DriveTrainSubsystem extends SubsystemBase {
 
   public Rotation2d getHeading() {
     //Negative because built in classes want it the other way
-    return Rotation2d.fromDegrees(-gyro.getAngle());
+    return Rotation2d.fromDegrees(gyro.getAngle());
   }
 
   public void resetOdometry(Pose2d pos) {
