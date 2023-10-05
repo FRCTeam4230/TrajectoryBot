@@ -27,11 +27,6 @@ public class RobotContainer {
   
 
   public RobotContainer() {
-    //Should show the robot moving on smart dashboard
-    Field2d field = new Field2d();
-    SmartDashboard.putData(field);
-    
-    
     configureBindings();
     configureDefaultCommands();
   }
@@ -46,7 +41,7 @@ public class RobotContainer {
   public Command getAutonomousCommand() {
 
     var traj =
-            PathPlanner.loadPath("path2", new PathConstraints(0.1, 0.5));
+            PathPlanner.loadPath("path2", new PathConstraints(0.5, 0.5));
 
     Command command = new PPRamseteCommand(
       traj,

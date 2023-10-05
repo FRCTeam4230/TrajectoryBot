@@ -22,6 +22,7 @@ import edu.wpi.first.util.sendable.SendableBuilder;
 import edu.wpi.first.wpilibj.SPI;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
 import edu.wpi.first.wpilibj.motorcontrol.MotorControllerGroup;
+import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
@@ -61,20 +62,26 @@ public class DriveTrainSubsystem extends SubsystemBase {
   private PIDController leftPIDController = new PIDController(Constants.DriveTrainSubsystemConstants.kP, 0, 0);
   private PIDController rightPIDController = new PIDController(Constants.DriveTrainSubsystemConstants.kP, 0, 0);
 
+  //Should show the robot moving on smart dashboard
+  Field2d field = new Field2d();
+
   public DriveTrainSubsystem() {
     configMotors(left1);
     configMotors(right1);
     configMotors(left2);
     configMotors(right2);
 
-    
-    rightGroup.setInverted(true);
+
+    leftGroup.setInverted(true);
+    rightGroup.setInverted(false);
 
     differentialDrive= new DifferentialDrive(leftGroup, rightGroup);
 
     resetOdometry();
 
     SmartDashboard.putData(this);
+    SmartDashboard.putData(field);
+
   }
 
   public void arcadeDrive(double forward, double rotation) {
@@ -99,11 +106,11 @@ public class DriveTrainSubsystem extends SubsystemBase {
 
 
   public double getLeftEncoder() {
-    return (left2.getEncoder().getPosition());
+    return -(left2.getEncoder().getPosition());
   }
 
   public double getRightEncoder() {
-    return -(right1.getEncoder().getPosition() + right2.getEncoder().getPosition()) / 2.0;
+    return (right1.getEncoder().getPosition() + right2.getEncoder().getPosition()) / 2.0;
   }
 
   public double getLeftEncoderMeters() {
@@ -166,8 +173,8 @@ public class DriveTrainSubsystem extends SubsystemBase {
     //Volts to from -12 to 12
     //set takes in -1 to 1
     //Divide by 12 converts the number from -12 to 12 range to -1 to 1 range
-    leftGroup.set(MathUtil.clamp(leftVolts / 12, -0.3, 0.3));
-    rightGroup.set(MathUtil.clamp(rightVolts / 12, -0.3, 0.3));
+    leftGroup.set(MathUtil.clamp(leftVolts / 12, -0.5, 0.5));
+    rightGroup.set(MathUtil.clamp(rightVolts / 12, -0.5, 0.5));
   }
 
   @Override
@@ -175,6 +182,7 @@ public class DriveTrainSubsystem extends SubsystemBase {
     //Updates robot position, in the video it took getHeading() and getSpeeds()
     //Here it takes in the distance travelled instead of velocity, which is kinda weirds
      pose = odometry.update(getHeading(), getRightEncoderMeters(), getLeftEncoderMeters());
+     field.setRobotPose(pose);
   }
 
   private void configMotors(CANSparkMax motor) {
