@@ -94,7 +94,7 @@ public class DriveTrainSubsystem extends SubsystemBase {
 
   public Rotation2d getHeading() {
     //Negative because built in classes want it the other way
-    return Rotation2d.fromDegrees(-gyro.getAngle());
+    return Rotation2d.fromDegrees(gyro.getAngle());
   }
 
   public void resetOdometry(Pose2d pos) {
@@ -177,7 +177,7 @@ public class DriveTrainSubsystem extends SubsystemBase {
     //Divide by 12 converts the number from -12 to 12 range to -1 to 1 range
     // leftGroup.set(MathUtil.clamp(leftVolts / 12, -0.3, 0.3));
     rightGroup.set(rightVolts / 12);
-    rightGroup.set(rightVolts / 12);
+    leftGroup.set(rightVolts / 12);
   }
 
   @Override

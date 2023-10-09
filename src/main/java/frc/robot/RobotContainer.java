@@ -6,6 +6,7 @@ package frc.robot;
 
 import com.pathplanner.lib.PathConstraints;
 import com.pathplanner.lib.PathPlanner;
+import com.pathplanner.lib.commands.FollowPathWithEvents;
 import com.pathplanner.lib.commands.PPRamseteCommand;
 
 import edu.wpi.first.math.controller.RamseteController;
@@ -13,12 +14,19 @@ import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import frc.robot.Constants.OperatorConstants;
+import frc.robot.commands.ArmPIDAgainstGravity;
 import frc.robot.commands.DriveCommand;
+import frc.robot.subsystems.ArmSubsystem;
 import frc.robot.subsystems.DriveTrainSubsystem;
 
 public class RobotContainer {
   private DriveTrainSubsystem driveTrain = new DriveTrainSubsystem();
   private XboxController controller = new XboxController(OperatorConstants.kDriverControllerPort);
+
+  private final ArmSubsystem armSubsystem = new ArmSubsystem();
+
+  private final ArmPIDAgainstGravity scoreTop = new ArmPIDAgainstGravity(armSubsystem,
+  () -> Constants.ArmPositions.SCORE_TOP);
   
 
   public RobotContainer() {
@@ -36,11 +44,12 @@ public class RobotContainer {
 
   
   public Command getAutonomousCommand() {
+    Constants.TrajectoryConstants.AUTO_EVENT_MAP.put("raiseArm", scoreTop);
 
     var traj =
-            PathPlanner.loadPath("path2long", new PathConstraints(0.7, 1));
+            PathPlanner.loadPath("testPathWithEvent", new PathConstraints(0.7, 1));
 
-    Command command = new PPRamseteCommand(
+    Command followPath = new PPRamseteCommand(
       traj,
       driveTrain::getPose,
       new RamseteController(),
@@ -54,6 +63,8 @@ public class RobotContainer {
         @Override
         public boolean isFinished() {return false;}
       }.beforeStarting(new InstantCommand(() -> driveTrain.resetOdometry(traj.getInitialPose())));
+
+      Command command = new FollowPathWithEvents(followPath, traj.getMarkers(), Constants.TrajectoryConstants.AUTO_EVENT_MAP);
 
       return command;
   }
