@@ -37,10 +37,10 @@ public final class Constants {
 
       //    public static final double kP = 2;//2022's bot
     // public static final double kP = 2.4077;//Bubblegum
-    public static final double kP = 0.0027015;//Bubblegum
+    public static final double kP = 0.06;//Bubblegum
 
 //      public static final double kD = 0.39408;//2022's bot
-      public static final double kD = 0.21483;//Bubblegum
+      public static final double kD = 0;//Bubblegum
     public static final double RAMP_RATE = 0.1;
     public static final double MOTOR_ROTATION_TO_INCHES = 72 / 40.687;
 

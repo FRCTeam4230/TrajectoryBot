@@ -13,6 +13,7 @@ import edu.wpi.first.math.controller.RamseteController;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import frc.robot.Constants.OperatorConstants;
 import frc.robot.commands.ArmPIDAgainstGravity;
 import frc.robot.commands.DriveCommand;
@@ -36,7 +37,9 @@ public class RobotContainer {
     configureDefaultCommands();
   }
 
-  private void configureBindings() {}
+  private void configureBindings() {
+    new JoystickButton(controller, XboxController.Button.kLeftBumper.value).whileTrue(scoreTop);
+  }
 
   private void configureDefaultCommands() {
     driveTrain.setDefaultCommand(new DriveCommand(driveTrain, () -> controller.getRightX(), () -> controller.getLeftY()));
@@ -47,7 +50,7 @@ public class RobotContainer {
     Constants.TrajectoryConstants.AUTO_EVENT_MAP.put("raiseArm", scoreTop);
 
     var traj =
-            PathPlanner.loadPath("testPathWithEvent", new PathConstraints(0.7, 1));
+            PathPlanner.loadPath("testPath", new PathConstraints(0.7, 1));
 
     Command followPath = new PPRamseteCommand(
       traj,
@@ -59,13 +62,11 @@ public class RobotContainer {
       driveTrain.getLeftPIDController(),
       driveTrain.getRightPIDController(),
       driveTrain::setOutput,
-      driveTrain){
-        @Override
-        public boolean isFinished() {return false;}
-      }.beforeStarting(new InstantCommand(() -> driveTrain.resetOdometry(traj.getInitialPose())));
+      driveTrain).beforeStarting(new InstantCommand(() -> driveTrain.resetOdometry(traj.getInitialPose())));
 
       Command command = new FollowPathWithEvents(followPath, traj.getMarkers(), Constants.TrajectoryConstants.AUTO_EVENT_MAP);
+      // new FollowPathWithEvents(command, null, null);
 
-      return command;
+      return followPath;
   }
 }
