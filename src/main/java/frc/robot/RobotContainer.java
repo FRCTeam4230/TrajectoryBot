@@ -16,6 +16,7 @@ import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import frc.robot.Constants.OperatorConstants;
 import frc.robot.commands.ArmPIDAgainstGravity;
+import frc.robot.commands.ArmPIDWithGravity;
 import frc.robot.commands.DriveCommand;
 import frc.robot.subsystems.ArmSubsystem;
 import frc.robot.subsystems.DriveTrainSubsystem;
@@ -28,6 +29,13 @@ public class RobotContainer {
 
   private final ArmPIDAgainstGravity scoreTop = new ArmPIDAgainstGravity(armSubsystem,
   () -> Constants.ArmPositions.SCORE_TOP);
+
+  private final ArmPIDWithGravity bringIn = new ArmPIDWithGravity(armSubsystem, 
+  () -> Constants.ArmPositions.BRING_IN);
+
+  private final ArmPIDWithGravity pickUpFromGround = new ArmPIDWithGravity(armSubsystem, 
+  () -> Constants.ArmPositions.PICK_UP_FROM_GROUND);
+
   
 
   public RobotContainer() {
@@ -38,7 +46,10 @@ public class RobotContainer {
   }
 
   private void configureBindings() {
-    new JoystickButton(controller, XboxController.Button.kLeftBumper.value).whileTrue(scoreTop);
+    new JoystickButton(controller, XboxController.Button.kA.value).onTrue(scoreTop);
+    new JoystickButton(controller, XboxController.Button.kB.value).onTrue(bringIn);
+    new JoystickButton(controller, XboxController.Button.kX.value).onTrue(pickUpFromGround);
+
   }
 
   private void configureDefaultCommands() {
