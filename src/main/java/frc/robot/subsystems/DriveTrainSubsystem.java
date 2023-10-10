@@ -175,9 +175,7 @@ public class DriveTrainSubsystem extends SubsystemBase {
     //Volts to from -12 to 12
     //set takes in -1 to 1
     //Divide by 12 converts the number from -12 to 12 range to -1 to 1 range
-    // leftGroup.set(MathUtil.clamp(leftVolts / 12, -0.3, 0.3));
-    rightGroup.set(rightVolts / 12);
-    leftGroup.set(rightVolts / 12);
+    differentialDrive.tankDrive(leftVolts/12, rightVolts/12);
   }
 
   @Override
